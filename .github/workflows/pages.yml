@@ -29,7 +29,7 @@ jobs:
       - name: Install, build, and upload your site
         uses: withastro/action@v0
         with:
-          path: './packages/site'
+          path: './packages/site/'
   # Single deploy job since we're just deploying
   deploy:
     needs: build
