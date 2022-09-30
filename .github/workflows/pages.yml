@@ -26,10 +26,29 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v2          
-      - name: Install, build, and upload your site
-        uses: withastro/action@v0
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2.2.2
         with:
-          path: './packages/site/'
+          version: 7.x.x
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install
+        shell: "bash"
+        run: |
+          cd packages/site
+          pnpm install
+      - name: Build
+        shell: "bash"
+        run: |
+          cd packages/site
+          pnpm run build
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: "./packakges/site/dist/"
+  
   # Single deploy job since we're just deploying
   deploy:
     needs: build
@@ -38,13 +57,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload entire repository
-          path: './packages/site/dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
